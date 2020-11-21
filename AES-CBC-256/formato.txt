@@ -22,3 +22,8 @@ PT ^ IV
 ---
 KEY
 CT
+
+KEY
+IV
+PT
+CT
