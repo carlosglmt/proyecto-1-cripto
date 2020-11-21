@@ -1,3 +1,0 @@
-Linea 1: llave
-Linea 2: ciphertext
-Linea 3: plaintext
