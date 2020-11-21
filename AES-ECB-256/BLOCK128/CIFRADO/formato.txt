@@ -1,0 +1,17 @@
+Linea 1: llave
+Linea 2: plaintext
+Linea 3: ciphertext
+
+set1
+256 vectores
+La primera llave es 1000...0 (256bits) y por cada vector de prueba se recorre un bit a la derecha
+El texto plano siempre es cero
+set2
+La llave es siempre cero
+El primer texto plano es es 1000...0 (256bits) y por cada vector de prueba se recorre un bit a la derecha
+set3
+La llave es de la forma 00000000...00, 01010101...01 hasta FFFFFFFF...FF
+El texto plano es de la forma 00000000...00, 01010101...01 hasta FFFFFFFF...FF
+set4
+La llave es aleatoria
+El texto plano es aleatorio
