@@ -15,3 +15,8 @@ El texto plano es de la forma 00000000...00, 01010101...01 hasta FFFFFFFF...FF
 set4
 La llave es aleatoria
 El texto plano es aleatorio
+
+Este mismo archivo se usa para descifrar
+Linea 1: llave
+Linea 2: ciphertext
+Linea 3: plaintext
