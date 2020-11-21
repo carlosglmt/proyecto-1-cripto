@@ -1,0 +1,29 @@
+T1
+KEY
+IV
+---
+PT
+CT
+
+T2
+PT ^ IV
+---
+KEY
+CT
+
+T3
+KEY
+---
+PT ^ IV
+CT
+
+T4
+PT ^ IV
+---
+KEY
+CT
+
+KEY
+IV
+PT
+CT
