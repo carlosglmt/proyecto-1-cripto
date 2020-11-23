@@ -62,7 +62,7 @@ Line 0: key
 Line 1: plaintext
 Line 2: ciphertext
 """
-#doAES("./AES-ECB-256/vectores.txt", "ECB", "ENCRYPT")
+doAES("./AES/vectores.txt", "ECB", "ENCRYPT")
 
 """
 AES-ECB256 BLOCK 128bits
@@ -71,7 +71,7 @@ Line 0: key
 Line 1: ciphertext
 Line 2: plaintext
 """
-#doAES("./AES-ECB-256/vectores.txt", "ECB", "DECRYPT")
+#doAES("./AES/vectores.txt", "ECB", "DECRYPT")
 
 """
 AES-CBC256
@@ -81,7 +81,7 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-#doAES("./AES-ECB-256/vectores.txt", "CBC", "ENCRYPT")
+#doAES("./AES/vectores.txt", "CBC", "ENCRYPT")
 
 """
 AES-CBC256
@@ -91,7 +91,7 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-#doAES("./AES-ECB-256/vectores.txt", "CBC", "DECRYPT")
+#doAES("./AES/vectores.txt", "CBC", "DECRYPT")
 
 """
 SHA384
