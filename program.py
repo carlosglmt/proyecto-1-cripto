@@ -3,59 +3,41 @@ import fileinput
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA384, SHA512
 
-def doAES_EBC(filename, decryption_mode=False):
-    f = open("vectores.txt", "w")
-    line_counter = 0
-    for line in fileinput.input(filename):
-        if line_counter == 0:
-            f.write(line)
-            key = bytearray.fromhex(line.rstrip())
-        elif line_counter == 1:
-            f.write(line)
-            data = bytearray.fromhex(line.rstrip())
-            if not decryption_mode:
-                # Aqui medir el tiempo
-                cipher = AES.new(key, AES.MODE_ECB)
-                data_output = cipher.encrypt(data)
-                # Aqui ya no medir el tiempo
-            else:
-                # Aqui medir el tiempo
-                cipher = AES.new(key, AES.MODE_ECB)
-                data_output = cipher.decrypt(data)
-                # Aqui ya no medir el tiempo
-
-            # Imprime texto cifrado
-            for i in range(len(data_output)):
-                print('{:0>2X}'.format(data_output[i]), end = '')
-            print("")
-        line_counter = (line_counter + 1) % 3
-    f.close()
-
-def doAES_CBC(filename, decryption_mode=False):
+def doAES(filename, AES_mode, encryption_mode):
     line_counter = 0
     for line in fileinput.input(filename):
         if line_counter == 0:
             key = bytearray.fromhex(line.rstrip())
         elif line_counter == 1:
-            iv = bytearray.fromhex(line.rstrip())
-        elif line_counter == 2:
             data = bytearray.fromhex(line.rstrip())
-            if not decryption_mode:
-                # Aqui medir el tiempo
-                cipher = AES.new(key, AES.MODE_CBC, iv)
-                data_output = cipher.encrypt(data)
-                # Aqui ya no medir el tiempo
-            else:
-                # Aqui medir el tiempo
-                cipher = AES.new(key, AES.MODE_CBC, iv)
-                data_output = cipher.decrypt(data)
-                # Aqui ya no medir el tiempo
+            if encryption_mode == "ENCRYPT":
+                if AES_mode == "ECB":
+                    # Aqui medir el tiempo
+                    cipher = AES.new(key, AES.MODE_ECB)
+                    data_output = cipher.encrypt(data)
+                    # Aqui ya no medir el tiempo
+                elif AES_mode == "CBC":
+                    # Aqui medir el tiempo
+                    cipher = AES.new(key, AES.MODE_CBC) #random iv
+                    data_output = cipher.encrypt(data)
+                    # Aqui ya no medir el tiempo
+            elif encryption_mode == "DECRYPT":
+                if AES_mode == "ECB":
+                    # Aqui medir el tiempo
+                    cipher = AES.new(key, AES.MODE_ECB)
+                    data_output = cipher.decrypt(data)
+                    # Aqui ya no medir el tiempo
+                elif AES_mode == "CBC":
+                    # Aqui medir el tiempo
+                    cipher = AES.new(key, AES.MODE_CBC)  # random iv
+                    data_output = cipher.decrypt(data)
+                    # Aqui ya no medir el tiempo
 
             # Imprime texto cifrado
             for i in range(len(data_output)):
                 print('{:0>2X}'.format(data_output[i]), end = '')
             print("")
-        line_counter = (line_counter + 1) % 4
+        line_counter = (line_counter + 1) % 2
 
 def doSHA(filename, length):
     for line in fileinput.input(filename):
@@ -80,7 +62,7 @@ Line 0: key
 Line 1: plaintext
 Line 2: ciphertext
 """
-doAES_EBC("./AES-ECB-256/vectores")
+#doAES("./AES-ECB-256/vectores.txt", "ECB", "ENCRYPT")
 
 """
 AES-ECB256 BLOCK 128bits
@@ -89,7 +71,7 @@ Line 0: key
 Line 1: ciphertext
 Line 2: plaintext
 """
-#doAES_EBC("./AES-ECB-256/vectores", True)
+#doAES("./AES-ECB-256/vectores.txt", "ECB", "DECRYPT")
 
 """
 AES-CBC256
@@ -99,7 +81,7 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-#doAES_CBC("./AES-CBC-256/vectores.txt")
+#doAES("./AES-ECB-256/vectores.txt", "CBC", "ENCRYPT")
 
 """
 AES-CBC256
@@ -109,7 +91,7 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-#doAES_CBC("./AES-CBC-256/vectores.txt", True)
+#doAES("./AES-ECB-256/vectores.txt", "CBC", "DECRYPT")
 
 """
 SHA384
