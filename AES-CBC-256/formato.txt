@@ -1,21 +1,3 @@
-T1
-KEY
-IV
-PT
-CT
-
-T2
-KEY
----
-PT ^ IV
-CT
-
-T3
-PT ^ IV
----
-KEY
-CT
-
 KEY
 IV
 PT

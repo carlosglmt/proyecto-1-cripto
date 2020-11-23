@@ -33,15 +33,17 @@ def doAES_CBC(filename, decryption_mode=False):
         if line_counter == 0:
             key = bytearray.fromhex(line.rstrip())
         elif line_counter == 1:
+            iv = bytearray.fromhex(line.rstrip())
+        elif line_counter == 2:
             data = bytearray.fromhex(line.rstrip())
             if not decryption_mode:
                 # Aqui medir el tiempo
-                cipher = AES.new(key, AES.MODE_ECB)
+                cipher = AES.new(key, AES.MODE_CBC, iv)
                 data_output = cipher.encrypt(data)
                 # Aqui ya no medir el tiempo
             else:
                 # Aqui medir el tiempo
-                cipher = AES.new(key, AES.MODE_ECB)
+                cipher = AES.new(key, AES.MODE_CBC, iv)
                 data_output = cipher.decrypt(data)
                 # Aqui ya no medir el tiempo
 
@@ -49,7 +51,7 @@ def doAES_CBC(filename, decryption_mode=False):
             for i in range(len(data_output)):
                 print('{:0>2X}'.format(data_output[i]), end = '')
             print("")
-        line_counter = (line_counter + 1) % 3
+        line_counter = (line_counter + 1) % 4
 
 def doSHA(filename, length):
     for line in fileinput.input(filename):
@@ -74,7 +76,7 @@ Line 0: key
 Line 1: plaintext
 Line 2: ciphertext
 """
-doAES_EBC("./AES-ECB-256/vectores")
+#doAES_EBC("./AES-ECB-256/vectores")
 
 """
 AES-ECB256 BLOCK 128bits
@@ -83,7 +85,7 @@ Line 0: key
 Line 1: ciphertext
 Line 2: plaintext
 """
-doAES_EBC("./AES-ECB-256/vectores", True)
+#doAES_EBC("./AES-ECB-256/vectores", True)
 
 """
 AES-CBC256
@@ -93,18 +95,28 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-doAES_EBC("./AES-ECB-256/vectores")
+doAES_CBC("./AES-CBC-256/vectores.txt")
+
+"""
+AES-CBC256
+DECRYPT
+Line 0: key
+Line 1: IV
+Line 2: plaintext
+Line 3: ciphertext
+"""
+#doAES_CBC("./AES-CBC-256/vectores.txt", True)
 
 """
 SHA384
 HASH
 Linea i: message
 """
-doSHA("./SHA2/SHA512/vectores.rsp", 384)
+#doSHA("./SHA2/SHA512/vectores.rsp", 384)
 
 """
 SHA512
 HASH
 Linea i: message
 """
-doSHA("./SHA2/SHA512/vectores.rsp", 512)
+#doSHA("./SHA2/SHA512/vectores.rsp", 512)
