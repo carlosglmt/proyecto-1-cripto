@@ -4,11 +4,14 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA384, SHA512
 
 def doAES_EBC(filename, decryption_mode=False):
+    f = open("vectores.txt", "w")
     line_counter = 0
     for line in fileinput.input(filename):
         if line_counter == 0:
+            f.write(line)
             key = bytearray.fromhex(line.rstrip())
         elif line_counter == 1:
+            f.write(line)
             data = bytearray.fromhex(line.rstrip())
             if not decryption_mode:
                 # Aqui medir el tiempo
@@ -26,6 +29,7 @@ def doAES_EBC(filename, decryption_mode=False):
                 print('{:0>2X}'.format(data_output[i]), end = '')
             print("")
         line_counter = (line_counter + 1) % 3
+    f.close()
 
 def doAES_CBC(filename, decryption_mode=False):
     line_counter = 0
@@ -76,7 +80,7 @@ Line 0: key
 Line 1: plaintext
 Line 2: ciphertext
 """
-#doAES_EBC("./AES-ECB-256/vectores")
+doAES_EBC("./AES-ECB-256/vectores")
 
 """
 AES-ECB256 BLOCK 128bits
@@ -95,7 +99,7 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-doAES_CBC("./AES-CBC-256/vectores.txt")
+#doAES_CBC("./AES-CBC-256/vectores.txt")
 
 """
 AES-CBC256
