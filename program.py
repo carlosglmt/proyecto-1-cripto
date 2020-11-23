@@ -98,7 +98,7 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-doAES("./AES/vectores.txt", "CBC", "ENCRYPT")
+#doAES("./AES/vectores.txt", "CBC", "ENCRYPT")
 
 """
 AES-CBC256
@@ -129,11 +129,11 @@ SHA3_384
 HASH
 Linea i: message
 """
-#doSHA("./SHA3/SHA3_384/SHA3_384.rsp", 384, 3)
+doSHA("./SHA3/SHA3_384/SHA3_384.rsp", 384, 3)
 
 """
 SHA3_512
 HASH
 Linea i: message
 """
-#doSHA("./SHA3/SHA3_512/SHA3_512.rsp", 512, 3)
+doSHA("./SHA3/SHA3_512/SHA3_512.rsp", 512, 3)
