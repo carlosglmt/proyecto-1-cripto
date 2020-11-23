@@ -98,7 +98,7 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-#doAES("./AES/vectores.txt", "CBC", "ENCRYPT")
+doAES("./AES/vectores.txt", "CBC", "ENCRYPT")
 
 """
 AES-CBC256
