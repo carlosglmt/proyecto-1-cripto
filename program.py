@@ -1,7 +1,7 @@
 import sys
 import fileinput
 from Crypto.Cipher import AES
-from Crypto.Hash import SHA384, SHA512
+from Crypto.Hash import SHA384, SHA512, SHA3_384, SHA3_512
 
 def doAES(filename, AES_mode, encryption_mode):
     line_counter = 0
@@ -39,21 +39,38 @@ def doAES(filename, AES_mode, encryption_mode):
             print("")
         line_counter = (line_counter + 1) % 2
 
-def doSHA(filename, length):
+def doSHA(filename, length, version):
     for line in fileinput.input(filename):
-        if length == 384:
-            # Begin Stopwatch
-            h = SHA384.new()
-            h.update(bytes.fromhex(line))
-            # End Stopwatch
-        elif length == 512:
-            # Begin Stopwatch
-            h = SHA512.new()
-            h.update(bytes.fromhex(line))
-            # End Stopwatch
-        else:
-            print("Nel")
-        print(h.hexdigest())
+        if version == 2:
+            if length == 384:
+                # Begin Stopwatch
+                h = SHA384.new()
+                h.update(bytes.fromhex(line))
+                # End Stopwatch
+            elif length == 512:
+                # Begin Stopwatch
+                h = SHA512.new()
+                h.update(bytes.fromhex(line))
+                # End Stopwatch
+            else:
+                print("Nel")
+            print(h.hexdigest())
+        elif version == 3:
+            if length == 384:
+                # Begin Stopwatch
+                h = SHA3_384.new()
+                h.update(bytes.fromhex(line))
+                # End Stopwatch
+            elif length == 512:
+                # Begin Stopwatch
+                h = SHA3_512.new()
+                h.update(bytes.fromhex(line))
+                # End Stopwatch
+            else:
+                print("Nel")
+            print(h.hexdigest())
+        else: 
+            print("SHA: Invalid version")
 
 """
 AES-ECB256 BLOCK 128bits
@@ -62,7 +79,7 @@ Line 0: key
 Line 1: plaintext
 Line 2: ciphertext
 """
-doAES("./AES/vectores.txt", "ECB", "ENCRYPT")
+#doAES("./AES/vectores.txt", "ECB", "ENCRYPT")
 
 """
 AES-ECB256 BLOCK 128bits
@@ -106,3 +123,17 @@ HASH
 Linea i: message
 """
 #doSHA("./SHA2/SHA512/vectores.rsp", 512)
+
+"""
+SHA3_384
+HASH
+Linea i: message
+"""
+#doSHA("./SHA3/SHA3_384/SHA3_384.rsp", 384, 3)
+
+"""
+SHA3_512
+HASH
+Linea i: message
+"""
+#doSHA("./SHA3/SHA3_512/SHA3_512.rsp", 512, 3)
