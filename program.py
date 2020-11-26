@@ -4,109 +4,108 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA384, SHA512, SHA3_384, SHA3_512
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pss
+from Crypto.Random import get_random_bytes
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec
 
-def doAES(filename, AES_mode, encryption_mode):
-    line_counter = 0
-    for line in fileinput.input(filename):
-        if line_counter == 0:
-            key = bytes.fromhex(line.rstrip())
-        elif line_counter == 1:
-            data = bytes.fromhex(line.rstrip())
-            if encryption_mode == "ENCRYPT":
-                if AES_mode == "ECB":
-                    # Aqui medir el tiempo
-                    cipher = AES.new(key, AES.MODE_ECB)
-                    data_output = cipher.encrypt(data)
-                    # Aqui ya no medir el tiempo
-                elif AES_mode == "CBC":
-                    # Aqui medir el tiempo
-                    cipher = AES.new(key, AES.MODE_CBC) #random iv
-                    data_output = cipher.encrypt(data)
-                    # Aqui ya no medir el tiempo
-            elif encryption_mode == "DECRYPT":
-                if AES_mode == "ECB":
-                    # Aqui medir el tiempo
-                    cipher = AES.new(key, AES.MODE_ECB)
-                    data_output = cipher.decrypt(data)
-                    # Aqui ya no medir el tiempo
-                elif AES_mode == "CBC":
-                    # Aqui medir el tiempo
-                    cipher = AES.new(key, AES.MODE_CBC)  # random iv
-                    data_output = cipher.decrypt(data)
-                    # Aqui ya no medir el tiempo
+def getVectors(filename):
+    vectors = []
+    for vector in fileinput.input(filename):
+        vectors.append(vector.rstrip())
+    return vectors
 
+def doAES(vectors, AES_mode, encryption_mode):
+    key = get_random_bytes(32)
+    cipher_ECB = AES.new(key, AES.MODE_ECB)
+    cipher_CBC = AES.new(key, AES.MODE_CBC) 
+    for vector in vectors:
+        data = bytes.fromhex(vector)
+        if encryption_mode == "ENCRYPT":
+            if AES_mode == "ECB":
+                # Aqui medir el tiempo
+                data_output = cipher_ECB.encrypt(data)
+                # Aqui ya no medir el tiempo
+            elif AES_mode == "CBC":
+                # Aqui medir el tiempo
+                data_output = cipher_CBC.encrypt(data) #random iv
+                # Aqui ya no medir el tiempo
+        elif encryption_mode == "DECRYPT":
+            if AES_mode == "ECB":
+                # Aqui medir el tiempo
+                data_output = cipher_ECB.decrypt(data)
+                # Aqui ya no medir el tiempo
+            elif AES_mode == "CBC":
+                # Aqui medir el tiempo
+                data_output = cipher_CBC.decrypt(data) #random iv
+                # Aqui ya no medir el tiempo
+                
             # Imprime texto cifrado
-            for i in range(len(data_output)):
-                print('{:0>2X}'.format(data_output[i]), end = '')
-            print("")
-        line_counter = (line_counter + 1) % 2
+            #for i in range(len(data_output)):
+            #    print('{:0>2X}'.format(data_output[i]), end = '')
+            #print("")
 
-def doSHA(filename, length, version):
-    for line in fileinput.input(filename):
+def doSHA(vectors, length, version):
+    for vector in vectors:
+        data = bytes.fromhex(vector)
         if version == 2:
             if length == 384:
                 # Begin Stopwatch
                 h = SHA384.new()
-                h.update(bytes.fromhex(line))
+                h.update(data)
                 # End Stopwatch
             elif length == 512:
                 # Begin Stopwatch
                 h = SHA512.new()
-                h.update(bytes.fromhex(line))
+                h.update(data)
                 # End Stopwatch
-            else:
-                print("Nel")
             print(h.hexdigest())
         elif version == 3:
             if length == 384:
                 # Begin Stopwatch
                 h = SHA3_384.new()
-                h.update(bytes.fromhex(line))
+                h.update(data)
                 # End Stopwatch
             elif length == 512:
                 # Begin Stopwatch
                 h = SHA3_512.new()
-                h.update(bytes.fromhex(line))
+                h.update(data)
                 # End Stopwatch
-            else:
-                print("Nel")
             print(h.hexdigest())
-        else: 
-            print("SHA: Invalid version")
 
-def doRSA(filename, mode):
-    line_counter = 0
-    for line in fileinput.input(filename):
-        if line_counter == 0:
-            data = bytes.fromhex(line.rstrip())
-            n = int.from_bytes(data, byteorder='big') #requires python 3.2 or above
-        elif line_counter == 1:
-            data = bytes.fromhex(line.rstrip())
-            e = int.from_bytes(data, byteorder='big')
-        elif line_counter == 2:
-            data = bytes.fromhex(line.rstrip())
-            d = int.from_bytes(data, byteorder='big')
-            message = b'un mensaje' #falta leer el mensaje
-            if mode == "OAEP":
-                #cifrado
-                key = RSA.construct((n, e, d))
-                cipher = PKCS1_OAEP.new(key)
-                ciphertext = cipher.encrypt(message)
-                data_output = ciphertext
-                #falta descifrado
-            elif mode == "PSS":
-                #firma
-                key = RSA.construct((n, e, d))
-                h = SHA384.new(message)
-                signature = pss.new(key).sign(h)
-                data_output = signature
-                #falta verificado
-            # Imprime texto cifrado o firma
-            for i in range(len(data_output)):
-                print('{:0>2X}'.format(data_output[i]), end='')
-            print("")
-        line_counter = (line_counter + 1) % 3
 
+def doRSA(vectors, RSA_mode, op_mode):
+    key = RSA.generate(1024)    
+    cipher_PKCS1 = PKCS1_OAEP.new(key)
+    for vector in vectors:
+        data = bytes.fromhex(vector)
+        if RSA_mode == "OAEP":
+            #cifrado
+            if op_mode == 0:    #Cifrar
+                ciphertext = cipher_PKCS1.encrypt(data)
+            else:               #Descifrar
+                ciphertext = cipher_PKCS1.decrypt(data)
+        elif RSA_mode == "PSS":
+            
+            #firma
+            #medir tiempo
+            h = SHA384.new(data)
+            signature = pss.new(key).sign(h)
+            #terminar de medir tiempo
+    
+            #verificar
+            #medir tiempo
+            h = SHA384.new(data)
+            verifier = pss.new(key)
+            verifier.verify(h, signature)
+            #terminar de medir tiempo
+            
+        # Imprime texto cifrado o firma
+        #for i in range(len(data_output)):
+        #    print('{:0>2X}'.format(data_output[i]), end='')
+        #print("")
+
+vectors = getVectors("vectores.txt")
+hash_vectors = getVectors("vectores_hash.txt")
 
 """
 AES-ECB256 BLOCK 128bits
@@ -115,7 +114,7 @@ Line 0: key
 Line 1: plaintext
 Line 2: ciphertext
 """
-#doAES("./AES/vectores.txt", "ECB", "ENCRYPT")
+doAES(vectors, "ECB", "ENCRYPT")
 
 """
 AES-ECB256 BLOCK 128bits
@@ -124,7 +123,7 @@ Line 0: key
 Line 1: ciphertext
 Line 2: plaintext
 """
-#doAES("./AES/vectores.txt", "ECB", "DECRYPT")
+doAES(vectors, "ECB", "DECRYPT")
 
 """
 AES-CBC256
@@ -134,7 +133,7 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-#doAES("./AES/vectores.txt", "CBC", "ENCRYPT")
+doAES(vectors, "CBC", "ENCRYPT")
 
 """
 AES-CBC256
@@ -144,32 +143,32 @@ Line 1: IV
 Line 2: plaintext
 Line 3: ciphertext
 """
-#doAES("./AES/vectores.txt", "CBC", "DECRYPT")
+doAES(vectors, "CBC", "DECRYPT")
 
 """
 SHA384
 HASH
 Linea i: message
 """
-#doSHA("./SHA2/SHA512/vectores.rsp", 384)
+doSHA(hash_vectors, 384, 2)
 
 """
 SHA512
 HASH
 Linea i: message
 """
-#doSHA("./SHA2/SHA512/vectores.rsp", 512)
+doSHA(hash_vectors, 512, 2)
 
 """
 SHA3_384
 HASH
 Linea i: message
 """
-#doSHA("./SHA3/SHA3_384/SHA3_384.rsp", 384, 3)
+doSHA(hash_vectors, 384, 3)
 
 """
 SHA3_512
 HASH
 Linea i: message
 """
-doSHA("./SHA3/SHA3_512/SHA3_512.rsp", 512, 3)
+doSHA(hash_vectors, 512, 3)
