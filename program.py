@@ -1,15 +1,16 @@
 import sys
 import fileinput
-from Crypto.Cipher import AES
+from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA384, SHA512, SHA3_384, SHA3_512
+from Crypto.PublicKey import RSA
 
 def doAES(filename, AES_mode, encryption_mode):
     line_counter = 0
     for line in fileinput.input(filename):
         if line_counter == 0:
-            key = bytearray.fromhex(line.rstrip())
+            key = bytes.fromhex(line.rstrip())
         elif line_counter == 1:
-            data = bytearray.fromhex(line.rstrip())
+            data = bytes.fromhex(line.rstrip())
             if encryption_mode == "ENCRYPT":
                 if AES_mode == "ECB":
                     # Aqui medir el tiempo
@@ -72,6 +73,31 @@ def doSHA(filename, length, version):
         else: 
             print("SHA: Invalid version")
 
+def doRSA(filename, mode):
+    line_counter = 0
+    for line in fileinput.input(filename):
+        if line_counter == 0:
+            data = bytes.fromhex(line.rstrip())
+            n = int.from_bytes(data, byteorder='big')
+        elif line_counter == 1:
+            data = bytes.fromhex(line.rstrip())
+            e = int.from_bytes(data, byteorder='big')
+        elif line_counter == 2:
+            data = bytes.fromhex(line.rstrip())
+            d = int.from_bytes(data, byteorder='big')
+            if mode == "OAEP":
+                key = RSA.construct((n, e, d))
+                cipher = PKCS1_OAEP.new(key)
+                ciphertext = cipher.encrypt(message) #falta obtener mensaje
+            elif mode == "PSS":
+                pass
+            # Imprime texto cifrado
+            for i in range(len(ciphertext)):
+                print('{:0>2X}'.format(ciphertext[i]), end='')
+            print("")
+        line_counter = (line_counter + 1) % 3
+
+
 """
 AES-ECB256 BLOCK 128bits
 ENCRYPT
@@ -129,7 +155,7 @@ SHA3_384
 HASH
 Linea i: message
 """
-doSHA("./SHA3/SHA3_384/SHA3_384.rsp", 384, 3)
+#doSHA("./SHA3/SHA3_384/SHA3_384.rsp", 384, 3)
 
 """
 SHA3_512
