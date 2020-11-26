@@ -3,6 +3,7 @@ import fileinput
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA384, SHA512, SHA3_384, SHA3_512
 from Crypto.PublicKey import RSA
+from Crypto.Signature import pss
 
 def doAES(filename, AES_mode, encryption_mode):
     line_counter = 0
@@ -78,22 +79,31 @@ def doRSA(filename, mode):
     for line in fileinput.input(filename):
         if line_counter == 0:
             data = bytes.fromhex(line.rstrip())
-            n = int.from_bytes(data, byteorder='big')
+            n = int.from_bytes(data, byteorder='big') #requires python 3.2 or above
         elif line_counter == 1:
             data = bytes.fromhex(line.rstrip())
             e = int.from_bytes(data, byteorder='big')
         elif line_counter == 2:
             data = bytes.fromhex(line.rstrip())
             d = int.from_bytes(data, byteorder='big')
+            message = b'un mensaje' #falta leer el mensaje
             if mode == "OAEP":
+                #cifrado
                 key = RSA.construct((n, e, d))
                 cipher = PKCS1_OAEP.new(key)
-                ciphertext = cipher.encrypt(message) #falta obtener mensaje
+                ciphertext = cipher.encrypt(message)
+                data_output = ciphertext
+                #falta descifrado
             elif mode == "PSS":
-                pass
-            # Imprime texto cifrado
-            for i in range(len(ciphertext)):
-                print('{:0>2X}'.format(ciphertext[i]), end='')
+                #firma
+                key = RSA.construct((n, e, d))
+                h = SHA384.new(message)
+                signature = pss.new(key).sign(h)
+                data_output = signature
+                #falta verificado
+            # Imprime texto cifrado o firma
+            for i in range(len(data_output)):
+                print('{:0>2X}'.format(data_output[i]), end='')
             print("")
         line_counter = (line_counter + 1) % 3
 
