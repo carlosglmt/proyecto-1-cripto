@@ -36,23 +36,23 @@ def doAES(vectors, AES_mode, encryption_mode):
                 start = timer() #begin time measure
                 data_output = cipher_ECB.encrypt(pad(data, AES.block_size)) #pad message and encrypt
                 end = timer() #end time measure
-                print(start-end) #total execution time
+                print(end-start) #total execution time
             elif AES_mode == "CBC":
                 start = timer() #begin time measure
                 data_output = cipher_CBC.encrypt(pad(data, AES.block_size))  # random iv
                 end = timer() #end time measure
-                print(start-end) #total execution time
+                print(end-start) #total execution time
         elif encryption_mode == "DECRYPT":
             if AES_mode == "ECB":
                 start = timer() #begin time measure
                 data_output = cipher_ECB.decrypt(pad(data, AES.block_size)) #pad message and decrypt
                 end = timer() #end time measure
-                print(start-end) #total execution time
+                print(end-start) #total execution time
             elif AES_mode == "CBC":
                 start = timer() #begin time measure
                 data_output = cipher_CBC.decrypt(pad(data, AES.block_size))  # random iv
                 end = timer() #end time measure
-                print(start-end) #total execution time
+                print(end-start) #total execution time
                 
         # Imprime texto cifrado
         # for i in range(len(data_output)):
@@ -74,13 +74,13 @@ def doSHA(vectors, length, version):
                 h = SHA384.new()
                 h.update(data) #message is hashed
                 end = timer() #end time measure
-                print(start-end) #total execution time
+                print(end-start) #total execution time
             elif length == 512:
                 start = timer() #begin time measure
                 h = SHA512.new()
                 h.update(data) #message is hashed
                 end = timer() #end time measure
-                print(start-end) #total execution time
+                print(end-start) #total execution time
             print(h.hexdigest())
         elif version == 3:
             if length == 384:
@@ -88,13 +88,13 @@ def doSHA(vectors, length, version):
                 h = SHA3_384.new()
                 h.update(data) #message is hashed
                 end = timer() #end time measure
-                print(start-end) #total execution time
+                print(end-start) #total execution time
             elif length == 512:
                 start = timer() #begin time measure
                 h = SHA3_512.new()
                 h.update(data) #message is hashed
                 end = timer() #end time measure
-                print(start-end) #total execution time
+                print(end-start) #total execution time
             #print(h.hexdigest())
 
 """
@@ -112,12 +112,12 @@ def doRSA(vectors, RSA_mode):
             start = timer() #begin time measure
             data_in = cipher_PKCS1.encrypt(data) #message encryption
             end = timer() #end time measure
-            print(start-end) #total execution time
+            print(end-start) #total execution time
             # Decrypt
             start = timer() #begin time measure
             data_out = cipher_PKCS1.decrypt(data_in) #message decryption
             end = timer() #end time measure
-            print(start-end) #total execution time
+            print(end-start) #total execution time
             # Print result
             #for i in range(len(data_in)):
             #    print('{:0>2X}'.format(data_in[i]), end='')
@@ -128,7 +128,7 @@ def doRSA(vectors, RSA_mode):
             h = SHA384.new(data)
             data_out = pss.new(key).sign(h) #hash is signed with private key
             end = timer() #end time measure
-            print(start-end) #total execution time
+            print(end-start) #total execution time
            
             # Verification
             start = timer() #begin time measure
@@ -137,7 +137,7 @@ def doRSA(vectors, RSA_mode):
             try:
                 verifier.verify(h, data_out) #data is verified
                 end = timer() #end time measure
-                print(start-end) #total execution time
+                print(end-start) #total execution time
                 #print("The signature is authentic.")
             except (ValueError, TypeError):
                 pass
@@ -164,7 +164,7 @@ def doDSS(vectors, mode):
         h = SHA512.new(data)
         signature = DSS.new(key, 'fips-186-3').sign(h) #data is signed with private key
         end = timer() #end time measure
-        print(start-end) #total execution time
+        print(end-start) #total execution time
 
         start = timer() #begin time measure
         h = SHA512.new(data)
@@ -172,7 +172,7 @@ def doDSS(vectors, mode):
         try:
             verifier.verify(h, signature) #data is verified
             end = timer() #end time measure
-            print(start-end) #total execution time
+            print(end-start) #total execution time
             #print("The message is authentic.")
         except ValueError:
             pass
@@ -193,13 +193,13 @@ def doECDSA_BF(vectors):
         start = timer() #begin time measure
         signature = private_key.sign(data, ec.ECDSA(hashes.SHA256())) #data is signed with private key
         end = timer() #end time measure
-        print(start-end) #total execution time
+        print(end-start) #total execution time
         start = timer() #begin time measure
         public_key = private_key.public_key()
         try:
             public_key.verify(signature, data, ec.ECDSA(hashes.SHA256())) #data is verified with public key
             end = timer() #end time measure
-            print(start-end) #total execution time
+            print(end-start) #total execution time
             #print("The message is authentic.")
         except InvalidSignature:
             pass
