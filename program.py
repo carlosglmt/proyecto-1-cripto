@@ -2,12 +2,13 @@ import sys
 import fileinput
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA384, SHA512, SHA3_384, SHA3_512
-from Crypto.PublicKey import RSA
-from Crypto.Signature import pss
+from Crypto.PublicKey import RSA, DSA
+from Crypto.Signature import pss, DSS
 from Crypto.Random import get_random_bytes
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from Crypto.Util.Padding import pad
+
 
 def getVectors(filename):
     vectors = []
@@ -15,10 +16,11 @@ def getVectors(filename):
         vectors.append(vector.rstrip())
     return vectors
 
+
 def doAES(vectors, AES_mode, encryption_mode):
     key = get_random_bytes(32)
     cipher_ECB = AES.new(key, AES.MODE_ECB)
-    cipher_CBC = AES.new(key, AES.MODE_CBC) 
+    cipher_CBC = AES.new(key, AES.MODE_CBC)
     for vector in vectors:
         data = bytes.fromhex(vector)
         if encryption_mode == "ENCRYPT":
@@ -28,7 +30,7 @@ def doAES(vectors, AES_mode, encryption_mode):
                 # Aqui ya no medir el tiempo
             elif AES_mode == "CBC":
                 # Aqui medir el tiempo
-                data_output = cipher_CBC.encrypt(pad(data, AES.block_size)) #random iv
+                data_output = cipher_CBC.encrypt(pad(data, AES.block_size))  # random iv
                 # Aqui ya no medir el tiempo
         elif encryption_mode == "DECRYPT":
             if AES_mode == "ECB":
@@ -37,13 +39,14 @@ def doAES(vectors, AES_mode, encryption_mode):
                 # Aqui ya no medir el tiempo
             elif AES_mode == "CBC":
                 # Aqui medir el tiempo
-                data_output = cipher_CBC.decrypt(pad(data, AES.block_size)) #random iv
+                data_output = cipher_CBC.decrypt(pad(data, AES.block_size))  # random iv
                 # Aqui ya no medir el tiempo
-                
-            # Imprime texto cifrado
-            #for i in range(len(data_output)):
-            #    print('{:0>2X}'.format(data_output[i]), end = '')
-            #print("")
+
+                # Imprime texto cifrado
+                # for i in range(len(data_output)):
+                #    print('{:0>2X}'.format(data_output[i]), end = '')
+                # print("")
+
 
 def doSHA(vectors, length, version):
     for vector in vectors:
@@ -75,38 +78,66 @@ def doSHA(vectors, length, version):
 
 
 def doRSA(vectors, RSA_mode):
-    key = RSA.generate(1024)    
+    key = RSA.generate(1024)
     cipher_PKCS1 = PKCS1_OAEP.new(key)
     for vector in vectors:
         data = bytes.fromhex(vector)
         if RSA_mode == "OAEP":
-            #Cifrar
-            ciphertext = cipher_PKCS1.encrypt(data)
-            #Descifrar
-            plaintext = cipher_PKCS1.decrypt(ciphertext)
-             # Imprime texto cifrado o firma
-            for i in range(len(ciphertext)):
-                print('{:0>2X}'.format(ciphertext[i]), end='')
-            print("")
-            for i in range(len(plaintext)):
-                print('{:0>2X}'.format(plaintext[i]), end='')
+            # Cifrar
+            data_in = cipher_PKCS1.encrypt(data)
+            # Descifrar
+            data_out = cipher_PKCS1.decrypt(data_out)
+            # Imprime texto cifrado o firma
+            for i in range(len(data_in)):
+                print('{:0>2X}'.format(data_in[i]), end='')
             print("")
         elif RSA_mode == "PSS":
-            #firma
-            #medir tiempo
+            # firma
+            # medir tiempo
             h = SHA384.new(data)
-            signature = pss.new(key).sign(h)
-            #terminar de medir tiempo
-    
-            #verificar
-            #medir tiempo
+            data_out = pss.new(key).sign(h)
+            # terminar de medir tiempo
+
+            # verificar
+            # medir tiempo
             h = SHA384.new(data)
             verifier = pss.new(key)
+            # terminar de medir tiempo
+            try:
+                verifier.verify(h, data_out)
+                print("The signature is authentic.")
+            except (ValueError, TypeError):
+                print("The signature is not authentic.")
+        for i in range(len(data_out)):
+            print('{:0>2X}'.format(data_out[i]), end='')
+        print("")
+
+
+def doDSA(vectors):
+    key = DSA.generate(1024)
+
+    for vector in vectors:
+        data = bytes.fromhex(vector)
+        # firma
+        # medir tiempo
+        h = SHA384.new(data)
+        signature = DSS.new(key, 'fips-186-3').sign(h)
+        # terminar de medir tiempo
+
+        # verificar
+        # medir tiempo
+        h = SHA384.new(data)
+        verifier = DSS.new(key.publickey(), 'fips-186-3')
+        try:
             verifier.verify(h, signature)
-            #terminar de medir tiempo
-            for i in range(len(signature)):
-                print('{:0>2X}'.format(signature[i]), end='')
-            print("")
+            print("The message is authentic.")
+        except ValueError:
+            print("The message is not authentic.")
+        # terminar de medir tiempo
+        for i in range(len(signature)):
+            print('{:0>2X}'.format(signature[i]), end='')
+        print("")
+
 
 vectors = getVectors("vectores.txt")
 hash_vectors = getVectors("vectores_hash.txt")
@@ -136,12 +167,14 @@ doSHA(hash_vectors, 384, 3)
 #SHA3_512
 doSHA(hash_vectors, 512, 3)
 """
-#RSA CIFRADO 
-#doRSA(vectors, "OAEP", 0)
+# RSA CIFRADO
+# doRSA(vectors, "OAEP", 0)
 
-#RSA DESCIFRADO 
-#doRSA(vectors, "OAEP")
+# RSA DESCIFRADO
+# doRSA(vectors, "OAEP", 1)
 
-#RSA FIRMA y VERIFICADO
+# RSA FIRMA y VERIFICADO
 doRSA(vectors, "PSS")
 
+# DSA FIRMA y VERIFICADO
+doDSA(vectors)
