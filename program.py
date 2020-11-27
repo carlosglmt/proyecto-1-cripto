@@ -140,7 +140,7 @@ def doDSS(vectors, mode):
             print('{:0>2X}'.format(signature[i]), end='')
         print("")
 
-def doECDSA(vectors):
+def doECDSA_BF(vectors):
     private_key = ec.generate_private_key(ec.SECT571K1())
     for vector in vectors:
         data = bytes.fromhex(vector)
@@ -197,8 +197,8 @@ doSHA(hash_vectors, 512, 3)
 # DSA FIRMA y VERIFICADO
 #doDSS(vectors, "DSA")
 
-# ECDSA Primary Field
-#doDSS(vectors, "ECDSA")
+# ECDSA
+doDSS(vectors, "ECDSA")
 
 # ECDSA Binary Field
-doECDSA(vectors)
+doECDSA_BF(vectors)
