@@ -2,7 +2,7 @@ import sys
 import fileinput
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA384, SHA512, SHA3_384, SHA3_512
-from Crypto.PublicKey import RSA, DSA
+from Crypto.PublicKey import RSA, DSA, ECC
 from Crypto.Signature import pss, DSS
 from Crypto.Random import get_random_bytes
 from cryptography.hazmat.primitives import hashes
@@ -112,22 +112,24 @@ def doRSA(vectors, RSA_mode):
             print('{:0>2X}'.format(data_out[i]), end='')
         print("")
 
-
-def doDSA(vectors):
-    key = DSA.generate(1024)
+def doDSS(vectors, mode):
+    if mode == "DSA":
+        key = DSA.generate(1024)
+    elif mode == "ECDSA":
+        key = ECC.generate(curve='P-521')
 
     for vector in vectors:
         data = bytes.fromhex(vector)
         # firma
         # medir tiempo
-        h = SHA384.new(data)
+        h = SHA512.new(data)
         signature = DSS.new(key, 'fips-186-3').sign(h)
         # terminar de medir tiempo
 
         # verificar
         # medir tiempo
-        h = SHA384.new(data)
-        verifier = DSS.new(key.publickey(), 'fips-186-3')
+        h = SHA512.new(data)
+        verifier = DSS.new(key, 'fips-186-3')
         try:
             verifier.verify(h, signature)
             print("The message is authentic.")
@@ -171,10 +173,13 @@ doSHA(hash_vectors, 512, 3)
 # doRSA(vectors, "OAEP", 0)
 
 # RSA DESCIFRADO
-# doRSA(vectors, "OAEP", 1)
+# doRSA(vectors, "OAEP")
 
 # RSA FIRMA y VERIFICADO
-doRSA(vectors, "PSS")
+#doRSA(vectors, "PSS")
 
 # DSA FIRMA y VERIFICADO
-doDSA(vectors)
+#doDSS(vectors, "DSA")
+
+# ECDSA
+doDSS(vectors, "ECDSA")
