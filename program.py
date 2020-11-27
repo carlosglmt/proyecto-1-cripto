@@ -304,25 +304,27 @@ for i in range(rounds):
     #SHA3_512
     avg_time_SHA_3_512 += doSHA(hash_vectors, 512, 3)
     
-    #Signing
+    #Signing and Verifying
     #RSA
-    avg_time_RSA_S += doRSA(vectors, "PSS")[0]
-    #DSA
-    avg_time_DSA_S += doDSS(vectors, "DSA")[0]
-    #ECDSA prime field
-    avg_time_ECDSA_prime_S += doDSS(vectors, "ECDSA")[0]
-    #ECDSA binary field
-    avg_time_ECDSA_binary_S += doECDSA_BF(vectors)[0]
+    signing_time, verifying_time = doRSA(vectors, "PSS")
+    avg_time_RSA_S += signing_time
+    avg_time_RSA_V += verifying_time
 
-    #Verifing
-    #RSA
-    avg_time_RSA_V += doRSA(vectors, "PSS")[1]
     #DSA
-    avg_time_DSA_V += doDSS(vectors, "DSA")[1]
+    signing_time, verifying_time = doDSS(vectors, "DSA")
+    avg_time_DSA_S += signing_time
+    avg_time_DSA_V += verifying_time
+
     #ECDSA prime field
-    avg_time_ECDSA_prime_V += doDSS(vectors, "ECDSA")[1]
+    signing_time, verifying_time = doDSS(vectors, "ECDSA")
+    avg_time_ECDSA_prime_S += signing_time
+    avg_time_ECDSA_prime_V += verifying_time
+
     #ECDSA binary field
-    avg_time_ECDSA_binary_V += doECDSA_BF(vectors)[1]
+    signing_time, verifying_time = doECDSA_BF(vectors)
+    avg_time_ECDSA_binary_S += signing_time
+    avg_time_ECDSA_binary_V += verifying_time
+
 
 print("Rondas: " + str(rounds))
 print("Tiempos promedio de cifrado")
