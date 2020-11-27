@@ -7,6 +7,7 @@ from Crypto.Signature import pss
 from Crypto.Random import get_random_bytes
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
+from Crypto.Util.Padding import pad
 
 def getVectors(filename):
     vectors = []
@@ -23,20 +24,20 @@ def doAES(vectors, AES_mode, encryption_mode):
         if encryption_mode == "ENCRYPT":
             if AES_mode == "ECB":
                 # Aqui medir el tiempo
-                data_output = cipher_ECB.encrypt(data)
+                data_output = cipher_ECB.encrypt(pad(data, AES.block_size))
                 # Aqui ya no medir el tiempo
             elif AES_mode == "CBC":
                 # Aqui medir el tiempo
-                data_output = cipher_CBC.encrypt(data) #random iv
+                data_output = cipher_CBC.encrypt(pad(data, AES.block_size)) #random iv
                 # Aqui ya no medir el tiempo
         elif encryption_mode == "DECRYPT":
             if AES_mode == "ECB":
                 # Aqui medir el tiempo
-                data_output = cipher_ECB.decrypt(data)
+                data_output = cipher_ECB.decrypt(pad(data, AES.block_size))
                 # Aqui ya no medir el tiempo
             elif AES_mode == "CBC":
                 # Aqui medir el tiempo
-                data_output = cipher_CBC.decrypt(data) #random iv
+                data_output = cipher_CBC.decrypt(pad(data, AES.block_size)) #random iv
                 # Aqui ya no medir el tiempo
                 
             # Imprime texto cifrado
@@ -73,19 +74,24 @@ def doSHA(vectors, length, version):
             print(h.hexdigest())
 
 
-def doRSA(vectors, RSA_mode, op_mode):
+def doRSA(vectors, RSA_mode):
     key = RSA.generate(1024)    
     cipher_PKCS1 = PKCS1_OAEP.new(key)
     for vector in vectors:
         data = bytes.fromhex(vector)
         if RSA_mode == "OAEP":
-            #cifrado
-            if op_mode == 0:    #Cifrar
-                ciphertext = cipher_PKCS1.encrypt(data)
-            else:               #Descifrar
-                ciphertext = cipher_PKCS1.decrypt(data)
+            #Cifrar
+            ciphertext = cipher_PKCS1.encrypt(data)
+            #Descifrar
+            plaintext = cipher_PKCS1.decrypt(ciphertext)
+             # Imprime texto cifrado o firma
+            for i in range(len(ciphertext)):
+                print('{:0>2X}'.format(ciphertext[i]), end='')
+            print("")
+            for i in range(len(plaintext)):
+                print('{:0>2X}'.format(plaintext[i]), end='')
+            print("")
         elif RSA_mode == "PSS":
-            
             #firma
             #medir tiempo
             h = SHA384.new(data)
@@ -98,77 +104,44 @@ def doRSA(vectors, RSA_mode, op_mode):
             verifier = pss.new(key)
             verifier.verify(h, signature)
             #terminar de medir tiempo
-            
-        # Imprime texto cifrado o firma
-        #for i in range(len(data_output)):
-        #    print('{:0>2X}'.format(data_output[i]), end='')
-        #print("")
+            for i in range(len(signature)):
+                print('{:0>2X}'.format(signature[i]), end='')
+            print("")
 
 vectors = getVectors("vectores.txt")
 hash_vectors = getVectors("vectores_hash.txt")
 
 """
-AES-ECB256 BLOCK 128bits
-ENCRYPT
-Line 0: key
-Line 1: plaintext
-Line 2: ciphertext
-"""
+#AES-ECB256 BLOCK 128bits
 doAES(vectors, "ECB", "ENCRYPT")
 
-"""
-AES-ECB256 BLOCK 128bits
-DECRYPT
-Line 0: key
-Line 1: ciphertext
-Line 2: plaintext
-"""
+#AES-ECB256 BLOCK 128bits
 doAES(vectors, "ECB", "DECRYPT")
 
-"""
-AES-CBC256
-ENCRYPT
-Line 0: key
-Line 1: IV
-Line 2: plaintext
-Line 3: ciphertext
-"""
+#AES-CBC256
 doAES(vectors, "CBC", "ENCRYPT")
 
-"""
-AES-CBC256
-DECRYPT
-Line 0: key
-Line 1: IV
-Line 2: plaintext
-Line 3: ciphertext
-"""
+#AES-CBC256
 doAES(vectors, "CBC", "DECRYPT")
 
-"""
-SHA384
-HASH
-Linea i: message
-"""
+#SHA384
 doSHA(hash_vectors, 384, 2)
 
-"""
-SHA512
-HASH
-Linea i: message
-"""
+#SHA512
 doSHA(hash_vectors, 512, 2)
 
-"""
-SHA3_384
-HASH
-Linea i: message
-"""
+#SHA3_384
 doSHA(hash_vectors, 384, 3)
 
-"""
-SHA3_512
-HASH
-Linea i: message
-"""
+#SHA3_512
 doSHA(hash_vectors, 512, 3)
+"""
+#RSA CIFRADO 
+#doRSA(vectors, "OAEP", 0)
+
+#RSA DESCIFRADO 
+#doRSA(vectors, "OAEP")
+
+#RSA FIRMA y VERIFICADO
+doRSA(vectors, "PSS")
+
