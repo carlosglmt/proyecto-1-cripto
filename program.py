@@ -249,60 +249,84 @@ def doECDSA_BF(vectors):
         #print("")
     
     return addition_sign / counter, addition_verify / counter
-    
+
 # Read vectors for AES, RSA, DSA and ECDSA  
 vectors = getVectors("vectors.txt")
 # Read vectors for SHA2 and SHA3
 hash_vectors = getVectors("hash_vectors.txt")
 
-#AES-ECB256
-avg_time = doAES(vectors, "ECB", "ENCRYPT")
-print(avg_time)
+rounds = int(input("Dame el numero de vueltas: "))
+# Algoritmos de cifrado
+for i in range(rounds):
+    avg_time_AESECB_E = 0
+    avg_time_AESCBC_E = 0
+    avg_time_RSA_E = 0
+    avg_time_AESECB_D = 0
+    avg_time_AESCBC_D = 0
+    avg_time_RSA_D = 0
+    """
+    #AES-ECB256
+    avg_time_AESECB_E += doAES(vectors, "ECB", "ENCRYPT")
+    #AES-CBC256
+    avg_time_AESCBC_E += doAES(vectors, "CBC", "ENCRYPT")
+    #RSA CIFRADO Y DESCIFRADO
+    avg_time_RSA_E += doRSA(vectors, "OAEP")[0]
+"""
+    #AES-ECB256
+    avg_time_AESECB_D += doAES(vectors, "ECB", "DECRYPT")
+    #AES-CBC256
+    avg_time_AESCBC_D += doAES(vectors, "CBC", "DECRYPT")
+    #RSA CIFRADO Y DESCIFRADO
+    avg_time_RSA_D += doRSA(vectors, "OAEP")[1]
+"""
+    #AES-ECB256
+    avg_time_AES += doAES(vectors, "ECB", "ENCRYPT")
+    
+    avg_time = doAES(vectors, "CBC", "ENCRYPT")
+    print(avg_time)
 
-#AES-ECB256
-avg_time = doAES(vectors, "ECB", "DECRYPT")
-print(avg_time)
+    #AES-CBC256
+    avg_time = doAES(vectors, "CBC", "DECRYPT")
+    print(avg_time)
 
-#AES-CBC256
-avg_time = doAES(vectors, "CBC", "ENCRYPT")
-print(avg_time)
+    #SHA384
+    avg_time = doSHA(hash_vectors, 384, 2)
+    print(avg_time)
 
-#AES-CBC256
-avg_time = doAES(vectors, "CBC", "DECRYPT")
-print(avg_time)
+    #SHA512
+    avg_time = doSHA(hash_vectors, 512, 2)
+    print(avg_time)
 
-#SHA384
-avg_time = doSHA(hash_vectors, 384, 2)
-print(avg_time)
+    #SHA3_384
+    avg_time = doSHA(hash_vectors, 384, 3)
+    print(avg_time)
 
-#SHA512
-avg_time = doSHA(hash_vectors, 512, 2)
-print(avg_time)
+    #SHA3_512
+    avg_time = doSHA(hash_vectors, 512, 3)
+    print(avg_time)
 
-#SHA3_384
-avg_time = doSHA(hash_vectors, 384, 3)
-print(avg_time)
+    #RSA CIFRADO Y DESCIFRADO
+    avg_time = doRSA(vectors, "OAEP")
+    print(avg_time)
 
-#SHA3_512
-avg_time = doSHA(hash_vectors, 512, 3)
-print(avg_time)
+    #RSA FIRMA y VERIFICADO
+    avg_time = doRSA(vectors, "PSS")
+    print(avg_time)
 
-#RSA CIFRADO Y DESCIFRADO
-avg_time = doRSA(vectors, "OAEP")
-print(avg_time)
+    #DSA FIRMA y VERIFICADO
+    avg_time = doDSS(vectors, "DSA")
+    print(avg_time)
 
-#RSA FIRMA y VERIFICADO
-avg_time = doRSA(vectors, "PSS")
-print(avg_time)
+    #ECDSA Prime Field
+    avg_time = doDSS(vectors, "ECDSA")
+    print(avg_time)
 
-#DSA FIRMA y VERIFICADO
-avg_time = doDSS(vectors, "DSA")
-print(avg_time)
-
-#ECDSA Prime Field
-avg_time = doDSS(vectors, "ECDSA")
-print(avg_time)
-
-# ECDSA Binary Field
-avg_time = doECDSA_BF(vectors)
-print(avg_time)
+    # ECDSA Binary Field
+    avg_time = doECDSA_BF(vectors)
+    print(avg_time)
+"""
+print("Tiempos promedio de descifrado")
+print("Rondas: " + str(rounds))
+print("AES ECB: " + str(avg_time_AESECB_D/rounds))
+print("AES CBC: " + str(avg_time_AESCBC_D/rounds))
+print("RSA OAEP: " + str(avg_time_RSA_D/rounds))
