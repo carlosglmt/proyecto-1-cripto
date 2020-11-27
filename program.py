@@ -140,7 +140,23 @@ def doDSS(vectors, mode):
             print('{:0>2X}'.format(signature[i]), end='')
         print("")
 
-
+def doECDSA(vectors):
+    private_key = ec.generate_private_key(ec.SECT571K1())
+    for vector in vectors:
+        data = bytes.fromhex(vector)
+        signature = private_key.sign(data, ec.ECDSA(hashes.SHA256()))
+        public_key = private_key.public_key()
+        try:
+            public_key.verify(signature, data, ec.ECDSA(hashes.SHA256()))
+            print("The message is authentic.")
+        except InvalidSignature:
+            print("The message is not authentic.")
+            
+        for i in range(len(signature)):
+            print('{:0>2X}'.format(signature[i]), end='')
+        print("")
+        
+        
 vectors = getVectors("vectores.txt")
 hash_vectors = getVectors("vectores_hash.txt")
 
@@ -183,3 +199,6 @@ doSHA(hash_vectors, 512, 3)
 
 # ECDSA
 doDSS(vectors, "ECDSA")
+
+# ECDSA Binary Field
+doECDSA(vectors)
