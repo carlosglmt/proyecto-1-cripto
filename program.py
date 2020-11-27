@@ -255,78 +255,100 @@ vectors = getVectors("vectors.txt")
 # Read vectors for SHA2 and SHA3
 hash_vectors = getVectors("hash_vectors.txt")
 
-rounds = int(input("Dame el numero de vueltas: "))
-# Algoritmos de cifrado
+# This is the number of rounds to be executed
+rounds = 100
+
+avg_time_AESECB_E = 0
+avg_time_AESCBC_E = 0
+avg_time_RSA_E = 0
+avg_time_AESECB_D = 0
+avg_time_AESCBC_D = 0
+avg_time_RSA_D = 0
+avg_time_SHA_2_384 = 0
+avg_time_SHA_2_512 = 0
+avg_time_SHA_3_384 = 0
+avg_time_SHA_3_512 = 0
+avg_time_RSA_S = 0
+avg_time_RSA_V = 0
+avg_time_DSA_S = 0
+avg_time_DSA_V = 0
+avg_time_ECDSA_prime_S = 0
+avg_time_ECDSA_prime_V = 0
+avg_time_ECDSA_binary_S = 0
+avg_time_ECDSA_binary_V = 0
+
 for i in range(rounds):
-    avg_time_AESECB_E = 0
-    avg_time_AESCBC_E = 0
-    avg_time_RSA_E = 0
-    avg_time_AESECB_D = 0
-    avg_time_AESCBC_D = 0
-    avg_time_RSA_D = 0
-    """
+    #Encryption
     #AES-ECB256
     avg_time_AESECB_E += doAES(vectors, "ECB", "ENCRYPT")
     #AES-CBC256
     avg_time_AESCBC_E += doAES(vectors, "CBC", "ENCRYPT")
     #RSA CIFRADO Y DESCIFRADO
     avg_time_RSA_E += doRSA(vectors, "OAEP")[0]
-"""
+    
+    #Decryption
     #AES-ECB256
     avg_time_AESECB_D += doAES(vectors, "ECB", "DECRYPT")
     #AES-CBC256
     avg_time_AESCBC_D += doAES(vectors, "CBC", "DECRYPT")
     #RSA CIFRADO Y DESCIFRADO
     avg_time_RSA_D += doRSA(vectors, "OAEP")[1]
-"""
-    #AES-ECB256
-    avg_time_AES += doAES(vectors, "ECB", "ENCRYPT")
-    
-    avg_time = doAES(vectors, "CBC", "ENCRYPT")
-    print(avg_time)
 
-    #AES-CBC256
-    avg_time = doAES(vectors, "CBC", "DECRYPT")
-    print(avg_time)
-
+    #Hashing
     #SHA384
-    avg_time = doSHA(hash_vectors, 384, 2)
-    print(avg_time)
-
+    avg_time_SHA_2_384 += doSHA(hash_vectors, 384, 2)
     #SHA512
-    avg_time = doSHA(hash_vectors, 512, 2)
-    print(avg_time)
-
+    avg_time_SHA_2_512 += doSHA(hash_vectors, 512, 2)
     #SHA3_384
-    avg_time = doSHA(hash_vectors, 384, 3)
-    print(avg_time)
-
+    avg_time_SHA_3_384 += doSHA(hash_vectors, 384, 3)
     #SHA3_512
-    avg_time = doSHA(hash_vectors, 512, 3)
-    print(avg_time)
+    avg_time_SHA_3_512 += doSHA(hash_vectors, 512, 3)
+    
+    #Signing
+    #RSA
+    avg_time_RSA_S += doRSA(vectors, "PSS")[0]
+    #DSA
+    avg_time_DSA_S += doDSS(vectors, "DSA")[0]
+    #ECDSA prime field
+    avg_time_ECDSA_prime_S += doDSS(vectors, "ECDSA")[0]
+    #ECDSA binary field
+    avg_time_ECDSA_binary_S += doECDSA_BF(vectors)[0]
 
-    #RSA CIFRADO Y DESCIFRADO
-    avg_time = doRSA(vectors, "OAEP")
-    print(avg_time)
+    #Verifing
+    #RSA
+    avg_time_RSA_V += doRSA(vectors, "PSS")[1]
+    #DSA
+    avg_time_DSA_V += doDSS(vectors, "DSA")[1]
+    #ECDSA prime field
+    avg_time_ECDSA_prime_V += doDSS(vectors, "ECDSA")[1]
+    #ECDSA binary field
+    avg_time_ECDSA_binary_V += doECDSA_BF(vectors)[1]
 
-    #RSA FIRMA y VERIFICADO
-    avg_time = doRSA(vectors, "PSS")
-    print(avg_time)
-
-    #DSA FIRMA y VERIFICADO
-    avg_time = doDSS(vectors, "DSA")
-    print(avg_time)
-
-    #ECDSA Prime Field
-    avg_time = doDSS(vectors, "ECDSA")
-    print(avg_time)
-
-    # ECDSA Binary Field
-    avg_time = doECDSA_BF(vectors)
-    print(avg_time)
-"""
-print("Tiempos promedio de descifrado")
 print("Rondas: " + str(rounds))
-print("AES ECB: " + str(avg_time_AESECB_D/rounds))
-print("AES CBC: " + str(avg_time_AESCBC_D/rounds))
-print("RSA OAEP: " + str(avg_time_RSA_D/rounds))
+print("Tiempos promedio de cifrado")
+print("AES-ECB: " + str(avg_time_AESECB_E / rounds))
+print("AES-CBC: " + str(avg_time_AESCBC_E / rounds))
+print("RSA-OAEP: " + str(avg_time_RSA_E / rounds))
+
+print("Tiempos promedio de descifrado")
+print("AES-ECB: " + str(avg_time_AESECB_D / rounds))
+print("AES-CBC: " + str(avg_time_AESCBC_D / rounds))
+print("RSA-OAEP: " + str(avg_time_RSA_D / rounds))
+
+print("Tiempos promedio de hash")
+print("SHA2-384: " + str(avg_time_SHA_2_384 / rounds))
+print("SHA2-512: " + str(avg_time_SHA_2_512 / rounds))
+print("SHA3-384: " + str(avg_time_SHA_3_384 / rounds))
+print("SHA3-512: " + str(avg_time_SHA_3_512 / rounds))
+
+print("Tiempos promedio de firma")
+print("RSA-PSS: " + str(avg_time_RSA_S / rounds))
+print("DSA: " + str(avg_time_DSA_S / rounds))
+print("ECC-P521: " + str(avg_time_ECDSA_prime_S / rounds))
+print("ECC-K571: " + str(avg_time_ECDSA_binary_S / rounds))
+
+print("Tiempos promedio de verificacion de firma")
+print("RSA-PSS: " + str(avg_time_RSA_V / rounds))
+print("DSA: " + str(avg_time_DSA_V / rounds))
+print("ECC-P521: " + str(avg_time_ECDSA_prime_V / rounds))
+print("ECC-K571: " + str(avg_time_ECDSA_binary_V / rounds))
