@@ -272,10 +272,10 @@ avg_time_RSA_S = 0              # Stores the average time of signing using RSA-P
 avg_time_DSA_S = 0              # Stores the average time of signing using DSA
 avg_time_ECDSA_prime_S = 0      # Stores the average time of signing using ECDSA-P521
 avg_time_ECDSA_binary_S = 0     # Stores the average time of signing using ECDSA-K571
-avg_time_RSA_V = 0              # Stores the average time of verifing using RSA-PSS
-avg_time_DSA_V = 0              # Stores the average time of verifing using DSA
-avg_time_ECDSA_prime_V = 0      # Stores the average time of verifing using ECDSA-P521
-avg_time_ECDSA_binary_V = 0     # Stores the average time of verifing using ECDSA-K571
+avg_time_RSA_V = 0              # Stores the average time of verifying using RSA-PSS
+avg_time_DSA_V = 0              # Stores the average time of verifying using DSA
+avg_time_ECDSA_prime_V = 0      # Stores the average time of verifying using ECDSA-P521
+avg_time_ECDSA_binary_V = 0     # Stores the average time of verifying using ECDSA-K571
 
 for i in range(rounds):
     #Encryption
