@@ -81,7 +81,7 @@ def doSHA(vectors, length, version):
                 h.update(data) #message is hashed
                 end = timer() #end time measure
                 print(end-start) #total execution time
-            print(h.hexdigest())
+            #print(h.hexdigest())
         elif version == 3:
             if length == 384:
                 start = timer() #begin time measure
@@ -213,8 +213,6 @@ def doECDSA_BF(vectors):
 vectors = getVectors("vectors.txt")
 # Read vectors for SHA2 and SHA3
 hash_vectors = getVectors("hash_vectors.txt")
-
-
 
 #AES-ECB256
 doAES(vectors, "ECB", "ENCRYPT")
