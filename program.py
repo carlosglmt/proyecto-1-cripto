@@ -255,27 +255,27 @@ vectors = getVectors("vectors.txt")
 # Read vectors for SHA2 and SHA3
 hash_vectors = getVectors("hash_vectors.txt")
 
-# This is the number of rounds to be executed
+# All test vector are going to be tested 100 times in each algorithm
 rounds = 100
 
-avg_time_AESECB_E = 0
-avg_time_AESCBC_E = 0
-avg_time_RSA_E = 0
-avg_time_AESECB_D = 0
-avg_time_AESCBC_D = 0
-avg_time_RSA_D = 0
-avg_time_SHA_2_384 = 0
-avg_time_SHA_2_512 = 0
-avg_time_SHA_3_384 = 0
-avg_time_SHA_3_512 = 0
-avg_time_RSA_S = 0
-avg_time_RSA_V = 0
-avg_time_DSA_S = 0
-avg_time_DSA_V = 0
-avg_time_ECDSA_prime_S = 0
-avg_time_ECDSA_prime_V = 0
-avg_time_ECDSA_binary_S = 0
-avg_time_ECDSA_binary_V = 0
+avg_time_AESECB_E = 0           # Stores the average time of encryption using AES-ECB
+avg_time_AESCBC_E = 0           # Stores the average time of encryption using AES-CBC
+avg_time_RSA_E = 0              # Stores the average time of encryption using RSA-OAEP
+avg_time_AESECB_D = 0           # Stores the average time of decryption using AES-ECB
+avg_time_AESCBC_D = 0           # Stores the average time of decryption using AES-CBC
+avg_time_RSA_D = 0              # Stores the average time of decryption using RSA-OAEP
+avg_time_SHA_2_384 = 0          # Stores the average time of hashing using SHA-2-384
+avg_time_SHA_2_512 = 0          # Stores the average time of hashing using SHA-2-512
+avg_time_SHA_3_384 = 0          # Stores the average time of hashing using SHA-3-384
+avg_time_SHA_3_512 = 0          # Stores the average time of hashing using SHA-3-512
+avg_time_RSA_S = 0              # Stores the average time of signing using RSA-PSS
+avg_time_DSA_S = 0              # Stores the average time of signing using DSA
+avg_time_ECDSA_prime_S = 0      # Stores the average time of signing using ECDSA-P521
+avg_time_ECDSA_binary_S = 0     # Stores the average time of signing using ECDSA-K571
+avg_time_RSA_V = 0              # Stores the average time of verifing using RSA-PSS
+avg_time_DSA_V = 0              # Stores the average time of verifing using DSA
+avg_time_ECDSA_prime_V = 0      # Stores the average time of verifing using ECDSA-P521
+avg_time_ECDSA_binary_V = 0     # Stores the average time of verifing using ECDSA-K571
 
 for i in range(rounds):
     #Encryption
@@ -283,7 +283,7 @@ for i in range(rounds):
     avg_time_AESECB_E += doAES(vectors, "ECB", "ENCRYPT")
     #AES-CBC256
     avg_time_AESCBC_E += doAES(vectors, "CBC", "ENCRYPT")
-    #RSA CIFRADO Y DESCIFRADO
+    #RSA
     avg_time_RSA_E += doRSA(vectors, "OAEP")[0]
     
     #Decryption
@@ -291,7 +291,7 @@ for i in range(rounds):
     avg_time_AESECB_D += doAES(vectors, "ECB", "DECRYPT")
     #AES-CBC256
     avg_time_AESCBC_D += doAES(vectors, "CBC", "DECRYPT")
-    #RSA CIFRADO Y DESCIFRADO
+    #RSA
     avg_time_RSA_D += doRSA(vectors, "OAEP")[1]
 
     #Hashing
@@ -329,24 +329,24 @@ print("Tiempos promedio de cifrado")
 print("AES-ECB: " + str(avg_time_AESECB_E / rounds))
 print("AES-CBC: " + str(avg_time_AESCBC_E / rounds))
 print("RSA-OAEP: " + str(avg_time_RSA_E / rounds))
-
+print("")
 print("Tiempos promedio de descifrado")
 print("AES-ECB: " + str(avg_time_AESECB_D / rounds))
 print("AES-CBC: " + str(avg_time_AESCBC_D / rounds))
 print("RSA-OAEP: " + str(avg_time_RSA_D / rounds))
-
+print("")
 print("Tiempos promedio de hash")
 print("SHA2-384: " + str(avg_time_SHA_2_384 / rounds))
 print("SHA2-512: " + str(avg_time_SHA_2_512 / rounds))
 print("SHA3-384: " + str(avg_time_SHA_3_384 / rounds))
 print("SHA3-512: " + str(avg_time_SHA_3_512 / rounds))
-
+print("")
 print("Tiempos promedio de firma")
 print("RSA-PSS: " + str(avg_time_RSA_S / rounds))
 print("DSA: " + str(avg_time_DSA_S / rounds))
 print("ECC-P521: " + str(avg_time_ECDSA_prime_S / rounds))
 print("ECC-K571: " + str(avg_time_ECDSA_binary_S / rounds))
-
+print("")
 print("Tiempos promedio de verificacion de firma")
 print("RSA-PSS: " + str(avg_time_RSA_V / rounds))
 print("DSA: " + str(avg_time_DSA_V / rounds))
