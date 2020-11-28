@@ -1,3 +1,9 @@
+"""
+ Created by: 
+    López Martínez Andrés
+    Morales Téllez Carlos Gamaliel
+    Pérez Quiroz Miguel Ángel
+"""
 import fileinput
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA384, SHA512, SHA3_384, SHA3_512
