@@ -284,15 +284,16 @@ for i in range(rounds):
     #AES-CBC256
     avg_time_AESCBC_E += doAES(vectors, "CBC", "ENCRYPT")
     #RSA
-    avg_time_RSA_E += doRSA(vectors, "OAEP")[0]
-    
+    RSA_Encryption, RSA_Decryption = doRSA(vectors, "OAEP")
+    avg_time_RSA_E += RSA_Encryption
+   
     #Decryption
     #AES-ECB256
     avg_time_AESECB_D += doAES(vectors, "ECB", "DECRYPT")
     #AES-CBC256
     avg_time_AESCBC_D += doAES(vectors, "CBC", "DECRYPT")
     #RSA
-    avg_time_RSA_D += doRSA(vectors, "OAEP")[1]
+    avg_time_RSA_D += RSA_Decryption
 
     #Hashing
     #SHA384
@@ -328,29 +329,29 @@ for i in range(rounds):
 
 print("Rondas: " + str(rounds))
 print("Tiempos promedio de cifrado")
-print("AES-ECB: " + str(round(avg_time_AESECB_E / rounds, 8)) + " | " + "AES-CBC: " + str(round(avg_time_AESCBC_E / rounds, 8)) + " | " + "RSA-OAEP: " + str(round(avg_time_RSA_E / rounds, 8)))
+print("AES-ECB: " + str(avg_time_AESECB_E / rounds) + " | " + "AES-CBC: " + str(avg_time_AESCBC_E / rounds) + " | " + "RSA-OAEP: " + str(avg_time_RSA_E / rounds))
 #print("AES-CBC: " + str(avg_time_AESCBC_E / rounds))
 #print("RSA-OAEP: " + str(avg_time_RSA_E / rounds))
 print("")
 print("Tiempos promedio de descifrado")
-print("AES-ECB: " + str(round(avg_time_AESECB_D / rounds, 8)) + " | " + "AES-CBC: " + str(round(avg_time_AESCBC_D / rounds, 8)) + " | " + "RSA-OAEP: " + str(round(avg_time_RSA_D / rounds, 8)))
+print("AES-ECB: " + str(avg_time_AESECB_D / rounds) + " | " + "AES-CBC: " + str(avg_time_AESCBC_D / rounds) + " | " + "RSA-OAEP: " + str(avg_time_RSA_D / rounds))
 #print("AES-CBC: " + str(avg_time_AESCBC_D / rounds))
 #print("RSA-OAEP: " + str(avg_time_RSA_D / rounds))
 print("")
 print("Tiempos promedio de hash")
-print("SHA2-384: " + str(round(avg_time_SHA_2_384 / rounds, 8)) + " | " + "SHA2-512: " + str(round(avg_time_SHA_2_512 / rounds, 8)) + " | " + "SHA3-384: " + str(round(avg_time_SHA_3_384 / rounds, 8)) + " | " + "SHA3-512: " + str(round(avg_time_SHA_3_512 / rounds, 8)))
+print("SHA2-384: " + str(avg_time_SHA_2_384 / rounds) + " | " + "SHA2-512: " + str(avg_time_SHA_2_512 / rounds) + " | " + "SHA3-384: " + str(avg_time_SHA_3_384 / rounds) + " | " + "SHA3-512: " + str(avg_time_SHA_3_512 / rounds))
 #print("SHA2-512: " + str(avg_time_SHA_2_512 / rounds))
 #print("SHA3-384: " + str(avg_time_SHA_3_384 / rounds))
 #print("SHA3-512: " + str(avg_time_SHA_3_512 / rounds))
 print("")
 print("Tiempos promedio de firma")
-print("RSA-PSS: " + str(round(avg_time_RSA_S / rounds, 8)) + " | " + "DSA: " + str(round(avg_time_DSA_S / rounds, 8)) + " | " + "ECC-P521: " + str(round(avg_time_ECDSA_prime_S / rounds, 8)) + " | " + "ECC-K571: " + str(round(avg_time_ECDSA_binary_S / rounds, 8)))
+print("RSA-PSS: " + str(avg_time_RSA_S / rounds) + " | " + "DSA: " + str(avg_time_DSA_S / rounds) + " | " + "ECC-P521: " + str(avg_time_ECDSA_prime_S / rounds) + " | " + "ECC-K571: " + str(avg_time_ECDSA_binary_S / rounds))
 #print("DSA: " + str(avg_time_DSA_S / rounds))
 #print("ECC-P521: " + str(avg_time_ECDSA_prime_S / rounds))
 #print("ECC-K571: " + str(avg_time_ECDSA_binary_S / rounds))
 print("")
 print("Tiempos promedio de verificacion de firma")
-print("RSA-PSS: " + str(round(avg_time_RSA_V / rounds, 6)) + " | " + "DSA: " + str(round(avg_time_DSA_V / rounds, 6)) + " | " + "ECC-P521: " + str(round(avg_time_ECDSA_prime_V / rounds, 6)) + " | " + "ECC-K571: " + str(round(avg_time_ECDSA_binary_V / rounds, 6)))
+print("RSA-PSS: " + str(avg_time_RSA_V / rounds) + " | " + "DSA: " + str(avg_time_DSA_V / rounds) + " | " + "ECC-P521: " + str(avg_time_ECDSA_prime_V / rounds) + " | " + "ECC-K571: " + str(avg_time_ECDSA_binary_V / rounds))
 #print("DSA: " + str(avg_time_DSA_V / rounds))
 #print("ECC-P521: " + str(avg_time_ECDSA_prime_V / rounds))
 #print("ECC-K571: " + str(avg_time_ECDSA_binary_V / rounds))
